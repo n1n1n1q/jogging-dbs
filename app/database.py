@@ -29,7 +29,7 @@ def get_db_connection():
 @contextmanager
 def get_db_cursor(commit=False, connection=None):
     """Context manager for database cursor.
-    
+
     Args:
         commit (bool): Whether to commit changes at the end
         connection (Connection): An existing connection to use, or None to create a new one
@@ -38,7 +38,7 @@ def get_db_cursor(commit=False, connection=None):
     if connection is None:
         connection = mysql.connector.connect(**DB_CONFIG)
         close_connection = True
-    
+
     cursor = connection.cursor(dictionary=True)
     try:
         yield cursor

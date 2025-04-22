@@ -156,7 +156,7 @@ async def search_routes(
     if not query:
         return RedirectResponse(url=f"/admin/dashboard?email={email}", status_code=303)
 
-# TODO: Implement actual search logic
+    # TODO: Implement actual search logic
     # For now, we'll just show all routes as a placeholder
     routes = RouteRepository.get_all_routes()
 
