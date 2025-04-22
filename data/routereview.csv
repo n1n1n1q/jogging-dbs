@@ -1,0 +1,5 @@
+ReviewID,Rating,Comment,RouteID,JoggerEmail
+1,5,Perfect route for training,1,roman.hryniv@example.com
+2,4,Good but crowded in mornings,2,nataliia.lyaskovska@example.com
+3,3,Needs better lighting,3,anton.pelcharskyi@example.com
+4,5,Best marathon route!,4,oleh.kalapun@example.com

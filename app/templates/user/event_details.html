@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-info {
+            background-color: #2196F3;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-left: 10px;
+        }
+        .badge-success {
+            background-color: #4CAF50;
+        }
+        .badge-danger {
+            background-color: #f44336;
+        }
+        .badge-info {
+            background-color: #2196F3;
+        }
+        .review-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .review-rating {
+            font-weight: bold;
+            color: #ff9800;
+        }
+        .review-actions {
+            margin-top: 10px;
+        }
+        .star-rating {
+            color: #ff9800;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>Event Details</h1>
+            </div>
+            <div>
+                <a href="/user/events?email={{ email }}">Back to Events</a>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+        
+        <div class="section">
+            <h2>{{ event.EventName }}
+                {% if is_past %}
+                    <span class="badge badge-info">Past Event</span>
+                {% endif %}
+                {% if is_registered %}
+                    <span class="badge badge-success">Registered</span>
+                {% endif %}
+            </h2>
+            
+            <p><strong>Date:</strong> {{ event.EventDate.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Participants:</strong> {{ registrations|length }} / {{ event.MaxParticipants }}</p>
+            
+            <div class="rating-summary">
+                <p>
+                    <strong>Average Rating:</strong> 
+                    <span class="star-rating">
+                        {% if avg_rating.count > 0 %}
+                            {{ avg_rating.average }} / 5
+                            ({{ avg_rating.count }} review{% if avg_rating.count != 1 %}s{% endif %})
+                            <span style="margin-left: 5px;">
+                                {% for i in range(avg_rating.average|int) %}★{% endfor %}
+                                {% if (avg_rating.average % 1) >= 0.5 %}★{% endif %}
+                                {% for i in range(5 - avg_rating.average|int - (1 if (avg_rating.average % 1) >= 0.5 else 0)) %}☆{% endfor %}
+                            </span>
+                        {% else %}
+                            No ratings yet
+                        {% endif %}
+                    </span>
+                </p>
+            </div>
+            
+            {% if not is_past and not is_registered and registrations|length < event.MaxParticipants %}
+                <a href="/user/events/{{ event.EventID }}/register?email={{ email }}" class="btn">Register for this Event</a>
+            {% elif not is_past and is_registered %}
+                <a href="/user/events/{{ event.EventID }}/unregister?email={{ email }}" class="btn btn-danger">Unregister</a>
+                <a href="/user/events/{{ event.EventID }}/registration-certificate?email={{ email }}" class="btn btn-info">Get Registration Certificate</a>
+            {% endif %}
+            
+            {% if is_past and is_registered %}
+                <a href="/user/sessions/add?email={{ email }}&event_id={{ event.EventID }}" class="btn btn-info">Add Session for this Event</a>
+                <a href="/user/events/{{ event.EventID }}/registration-certificate?email={{ email }}" class="btn btn-info">Get Registration Certificate</a>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h3>Participants</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Registration Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registration in registrations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ registration.JoggerName }}</td>
+                        <td>{{ registration.TimeStamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not registrations %}
+                    <tr>
+                        <td colspan="3">No participants registered for this event.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if is_past %}
+        <div class="section">
+            <h3>Leaderboard</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Finish Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in leaderboard %}
+                    <tr>
+                        <td>{{ entry.Rank }}</td>
+                        <td>{{ entry.JoggerName }}</td>
+                        <td>{{ entry.FinishTime }} s</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not leaderboard %}
+                    <tr>
+                        <td colspan="3">No recorded sessions for this event.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        
+        <div class="section">
+            <h3>Reviews</h3>
+            {% if is_past and is_registered %}
+                {% if user_review %}
+                    <div class="review-actions">
+                        <a href="/user/events/{{ event.EventID }}/review?email={{ email }}" class="btn">Edit Your Review</a>
+                        <a href="/user/events/{{ event.EventID }}/reviews/{{ user_review.ReviewID }}/delete?email={{ email }}" class="btn btn-danger">Delete Your Review</a>
+                    </div>
+                {% else %}
+                    <div class="review-actions">
+                        <a href="/user/events/{{ event.EventID }}/review?email={{ email }}" class="btn">Write a Review</a>
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div>
+                        <strong>{{ review.JoggerName }}</strong>
+                    </div>
+                    <div class="review-rating">
+                        <span class="star-rating">
+                        {% for i in range(review.Rating) %}★{% endfor %}
+                        {% for i in range(5 - review.Rating) %}☆{% endfor %}
+                        </span>
+                    </div>
+                </div>
+                <div class="review-content">
+                    {{ review.Comment if review.Comment else "No comment provided." }}
+                </div>
+            </div>
+            {% endfor %}
+            {% if not reviews %}
+                <p>No reviews yet for this event.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

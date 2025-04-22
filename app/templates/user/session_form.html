@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .field-error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 5px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>{{ "Edit" if action == "edit" else "Add" }} Jogging Session</h1>
+            </div>
+            <div>
+                <a href="/user/sessions?email={{ email }}">Back to Sessions</a>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if event %}
+        <div class="info-box">
+            <p><strong>Adding session for event:</strong> {{ event.EventName }}</p>
+            <p><strong>Event Date:</strong> {{ event.EventDate.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+        {% endif %}
+        
+        <form id="sessionForm" action="
+            {% if action == 'edit' %}
+                /user/sessions/{{ session.SessionID }}/edit
+            {% else %}
+                /user/sessions/add
+            {% endif %}
+            " method="post" onsubmit="return validateForm()">
+            <input type="hidden" name="email" value="{{ email }}">
+            {% if event_id %}
+            <input type="hidden" name="event_id" value="{{ event_id }}">
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="start_dt">Start Date and Time:</label>
+                <input type="datetime-local" id="start_dt" name="start_dt" value="{{ session.StartDT.strftime('%Y-%m-%dT%H:%M') if session and session.StartDT else '' }}">
+                <div id="start_dt_error" class="field-error">Please select a start date and time</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="end_dt">End Date and Time:</label>
+                <input type="datetime-local" id="end_dt" name="end_dt" value="{{ session.EndDT.strftime('%Y-%m-%dT%H:%M') if session and session.EndDT else '' }}">
+                <div id="end_dt_error" class="field-error">Please select an end date and time</div>
+                <div id="date_comparison_error" class="field-error">End date must be after start date</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="distance">Distance (km):</label>
+                <input type="number" id="distance" name="distance" step="0.01" value="{{ session.Distance if session and session.Distance else '' }}">
+                <div id="distance_error" class="field-error">Please enter a distance</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="route_id">Route:</label>
+                <select id="route_id" name="route_id">
+                    <option value="">-- Select a Route (Required) --</option>
+                    {% for route in routes %}
+                    <option value="{{ route.RouteID }}" {% if session and session.RouteID == route.RouteID %}selected{% endif %}>
+                        {{ route.RouteName }} ({{ route.Distance }} km)
+                    </option>
+                    {% endfor %}
+                </select>
+                <div id="route_error" class="field-error">Please select a route for this session</div>
+            </div>
+            
+            <button type="submit">{{ "Update" if action == "edit" else "Add" }} Session</button>
+            <button type="button" class="btn-secondary" onclick="window.location.href='/user/sessions?email={{ email }}'">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            let valid = true;
+            let startDt = document.getElementById('start_dt');
+            let endDt = document.getElementById('end_dt');
+            let distance = document.getElementById('distance');
+            let routeId = document.getElementById('route_id');
+            
+            // Reset error messages
+            document.getElementById('start_dt_error').style.display = 'none';
+            document.getElementById('end_dt_error').style.display = 'none';
+            document.getElementById('date_comparison_error').style.display = 'none';
+            document.getElementById('distance_error').style.display = 'none';
+            document.getElementById('route_error').style.display = 'none';
+            
+            // Check empty fields
+            if (!startDt.value) {
+                document.getElementById('start_dt_error').style.display = 'block';
+                valid = false;
+            }
+            
+            if (!endDt.value) {
+                document.getElementById('end_dt_error').style.display = 'block';
+                valid = false;
+            }
+            
+            if (!distance.value) {
+                document.getElementById('distance_error').style.display = 'block';
+                valid = false;
+            }
+            
+            // Check if route is selected
+            if (!routeId.value) {
+                document.getElementById('route_error').style.display = 'block';
+                valid = false;
+            }
+            
+            // Check if end date is after start date
+            if (startDt.value && endDt.value) {
+                let startDate = new Date(startDt.value);
+                let endDate = new Date(endDt.value);
+                
+                if (endDate <= startDate) {
+                    document.getElementById('date_comparison_error').style.display = 'block';
+                    valid = false;
+                }
+            }
+            
+            return valid;
+        }
+    </script>
+</body>
+</html>

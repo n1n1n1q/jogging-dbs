@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .btn-info {
+            background-color: #2196F3;
+        }
+        .btn-warning {
+            background-color: #ff9800;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>Jogging Routes</h1>
+            </div>
+            <div>
+                <a href="/user/dashboard?email={{ email }}">Back to Dashboard</a>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Route Name</th>
+                    <th>Distance (km)</th>
+                    <th>Average Pace (s/m)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for route in routes %}
+                <tr>
+                    <td>{{ route.RouteName }}</td>
+                    <td>{{ route.Distance }}</td>
+                    <td>{{ route.AvgPace if route.AvgPace else 'N/A' }}</td>
+                    <td>
+                        <a href="/user/routes/{{ route.RouteID }}/details?email={{ email }}" class="btn btn-info">Details</a>
+                        <a href="/user/routes/{{ route.RouteID }}/review?email={{ email }}" class="btn btn-warning">
+                            {% if route.has_review %}Edit Review{% else %}Add Review{% endif %}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not routes %}
+                <tr>
+                    <td colspan="4">No routes found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .rating-container {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        .rating-container input[type="radio"] {
+            display: none;
+        }
+        .rating-container label {
+            font-size: 30px;
+            color: #ccc;
+            cursor: pointer;
+            width: auto;
+            display: inline;
+            margin-right: 5px;
+        }
+        .rating-container label:hover,
+        .rating-container label:hover ~ label,
+        .rating-container input[type="radio"]:checked ~ label {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>{{ "Edit" if action == "edit" else "Add" }} Review</h1>
+            </div>
+            <div>
+                {% if type == "event" %}
+                <a href="/user/events/{{ event.EventID }}/details?email={{ email }}">Back to Event</a>
+                {% else %}
+                <a href="/user/routes/{{ route.RouteID }}/details?email={{ email }}">Back to Route</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form action="
+            {% if type == 'event' %}
+                /user/events/{{ event.EventID }}/review
+            {% else %}
+                /user/routes/{{ route.RouteID }}/review
+            {% endif %}
+            " method="post">
+            <input type="hidden" name="email" value="{{ email }}">
+            
+            {% if review %}
+            <input type="hidden" name="review_id" value="{{ review.ReviewID }}">
+            {% endif %}
+            
+            <div class="form-group">
+                <label>Rating:</label>
+                <div class="rating-container">
+                    <input type="radio" id="star5" name="rating" value="5" {% if review and review.Rating == 5 %}checked{% endif %}>
+                    <label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" {% if review and review.Rating == 4 %}checked{% endif %}>
+                    <label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" {% if review and review.Rating == 3 %}checked{% endif %}>
+                    <label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" {% if review and review.Rating == 2 %}checked{% endif %}>
+                    <label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" {% if review and review.Rating == 1 %}checked{% endif %}>
+                    <label for="star1">★</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">Comment (optional):</label>
+                <textarea id="comment" name="comment">{{ review.Comment if review and review.Comment else '' }}</textarea>
+            </div>
+            
+            <button type="submit">{{ "Update" if action == "edit" else "Submit" }} Review</button>
+            <button type="button" class="btn-secondary" onclick="window.location.href='
+                {% if type == 'event' %}
+                    /user/events/{{ event.EventID }}/details?email={{ email }}
+                {% else %}
+                    /user/routes/{{ route.RouteID }}/details?email={{ email }}
+                {% endif %}
+            '">Cancel</button>
+        </form>
+    </div>
+</body>
+</html>

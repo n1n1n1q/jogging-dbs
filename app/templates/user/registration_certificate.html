@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Certificate</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .certificate {
+            border: 2px solid #2c3e50;
+            padding: 30px;
+            text-align: center;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .name {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .divider {
+            border-bottom: 1px solid #2c3e50;
+            width: 80%;
+            margin: 20px auto;
+        }
+        .event-details {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+        .registration-time {
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .back-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .print-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            .certificate {
+                border: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <div class="header">Registration Certificate</div>
+        
+        <div class="name">{{ user.Name }}</div>
+        
+        <div class="divider"></div>
+        
+        <div class="event-details">{{ event.EventName }}</div>
+        <div class="registration-time">Registered on: {{ registration_time.strftime('%B %d, %Y') }}</div>
+        
+        <div class="no-print">
+            <a href="/user/events/{{ event.EventID }}/details?email={{ email }}" class="back-btn">Back to Event</a>
+            <button onclick="window.print()" class="print-btn">Print Certificate</button>
+        </div>
+    </div>
+</body>
+</html>

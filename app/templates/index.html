@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jogging App - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+        }
+        .tab.active {
+            border-bottom: 3px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogging App</h1>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('user')">User</div>
+            <div class="tab" onclick="showTab('organizer')">Organizer</div>
+            <div class="tab" onclick="showTab('admin')">Admin</div>
+        </div>
+        
+        <div id="user-tab" class="tab-content active">
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="user-email">Email:</label>
+                    <input type="email" id="user-email" name="email" placeholder="Enter your email" required>
+                    <input type="hidden" name="role" value="user">
+                </div>
+                <button type="submit">Login as User</button>
+            </form>
+        </div>
+        
+        <div id="organizer-tab" class="tab-content">
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="organizer-email">Email:</label>
+                    <input type="email" id="organizer-email" name="email" placeholder="Enter your organizer email" required>
+                    <input type="hidden" name="role" value="organizer">
+                </div>
+                <button type="submit">Login as Organizer</button>
+            </form>
+        </div>
+        
+        <div id="admin-tab" class="tab-content">
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="admin-email">Email:</label>
+                    <input type="email" id="admin-email" name="email" placeholder="Enter admin email" required>
+                    <input type="hidden" name="role" value="admin">
+                </div>
+                <button type="submit">Login as Admin</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to selected tab button
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.innerText.toLowerCase() === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

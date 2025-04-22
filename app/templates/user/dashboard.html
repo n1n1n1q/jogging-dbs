@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .card-content {
+            font-size: 16px;
+            color: #555;
+            margin: 15px 0;
+            min-height: 80px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .card-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .card {
+            width: 30%;
+        }
+        @media (max-width: 768px) {
+            .card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>User Dashboard</h1>
+            </div>
+            <div>
+                <a href="/">Logout</a>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+        
+        <div class="section">
+            <h2>Welcome, {{ user.Name }}!</h2>
+            <p>Email: {{ user.Email }}</p>
+        </div>
+        
+        <div class="section">
+            <h2>Navigation</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3>Events</h3>
+                    <div class="card-content">
+                        <p>View all jogging events, register for events, and see leaderboards.</p>
+                    </div>
+                    <a href="/user/events?email={{ email }}" class="btn">View Events</a>
+                </div>
+                
+                <div class="card">
+                    <h3>Routes</h3>
+                    <div class="card-content">
+                        <p>Browse and review jogging routes for your training.</p>
+                    </div>
+                    <a href="/user/routes?email={{ email }}" class="btn">View Routes</a>
+                </div>
+                
+                <div class="card">
+                    <h3>Sessions</h3>
+                    <div class="card-content">
+                        <p>Track your jogging sessions and link them to routes and events.</p>
+                    </div>
+                    <a href="/user/sessions?email={{ email }}" class="btn">View Sessions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

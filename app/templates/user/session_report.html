@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .report-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .stat-box {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .stat-label {
+            color: #666;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .motivation-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+        .session-id {
+            color: #777;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: right;
+        }
+        .pace-comparison {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .pace-good {
+            color: green;
+        }
+        .pace-bad {
+            color: red;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                background-color: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar no-print">
+            <div>
+                <h1>Session Report</h1>
+            </div>
+            <div>
+                <a href="/user/sessions?email={{ email }}">Back to Sessions</a>
+            </div>
+        </div>
+        
+        <div class="report-section">
+            <h2>Jogger Information</h2>
+            <p><strong>Name:</strong> {{ user.Name }}</p>
+            <p><strong>Email:</strong> {{ user.Email }}</p>
+            <div class="session-id">Session ID: {{ session.SessionID }}</div>
+        </div>
+        
+        <div class="report-section">
+            <h2>Session Details</h2>
+            <p><strong>Date:</strong> {{ session.StartDT.strftime('%Y-%m-%d') }}</p>
+            <p><strong>Start Time:</strong> {{ session.StartDT.strftime('%H:%M') }}</p>
+            <p><strong>End Time:</strong> {{ session.EndDT.strftime('%H:%M') }}</p>
+            <p><strong>Duration:</strong> {{ duration_formatted }}</p>
+            {% if session.RouteID %}
+            <p><strong>Route ID:</strong> {{ session.RouteID }}</p>
+            <p><strong>Route Name:</strong> {{ session.RouteName }}</p>
+            {% else %}
+            <p><strong>Route:</strong> No specific route</p>
+            {% endif %}
+        </div>
+        
+        <div class="report-section">
+            <h2>Performance Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Distance</div>
+                    <div class="stat-value">{{ session.Distance }} km</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Duration</div>
+                    <div class="stat-value">{{ duration_formatted }}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Average Pace</div>
+                    <div class="stat-value">{{ pace }} s/m</div>
+                    <div class="stat-label">(seconds per meter)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Average Speed</div>
+                    <div class="stat-value">{{ speed }} km/h</div>
+                </div>
+            </div>
+            
+            {% if session.RouteID and route_avg_pace != "0" %}
+            <div class="pace-comparison">
+                <span><strong>Average Route Pace:</strong> {{ route_avg_pace }} s/m</span>
+                {% if pace_diff < 0 %}
+                <span class="pace-good">You were faster than average by {{ pace_diff_abs }} s/m!</span>
+                {% elif pace_diff > 0 %}
+                <span class="pace-bad">You were slower than average by {{ pace_diff_abs }} s/m</span>
+                {% else %}
+                <span>You matched the average pace exactly!</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="stat-box">
+                <div class="stat-label">Estimated Calories Burnt</div>
+                <div class="stat-value">{{ calories_burnt }} kcal</div>
+                <div class="stat-label">(Based on session distance)</div>
+            </div>
+        </div>
+        
+        <div class="motivation-box">
+            {% if performance_rating > 1 %}
+            NICE JOB! You're making great progress!
+            {% else %}
+            Train more, bro! You've got this!
+            {% endif %}
+        </div>
+        
+        <div class="report-section no-print">
+            <button onclick="window.print()" class="btn">Print Report</button>
+        </div>
+    </div>
+</body>
+</html>

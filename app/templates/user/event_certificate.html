@@ -1,0 +1,33 @@
+{% extends "common/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-primary">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Certificate of Participation</h2>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <h3 class="text-primary">This is to certify that</h3>
+                <h1 class="display-4 font-weight-bold my-4">{{ user.Name }}</h1>
+                <h3 class="text-primary">has successfully participated in</h3>
+                <h2 class="display-5 font-italic my-4">"{{ event.Name }}"</h2>
+                <h3 class="text-primary">held on {{ event.EventDate.strftime('%B %d, %Y') }}</h3>
+                <p class="lead mt-4">Organized by: {{ event.OrganizerName }}</p>
+                
+                <div class="mt-5">
+                    <p>Certificate ID: {{ event.EventID }}-{{ user.Email | replace('@', '-') }}</p>
+                    <p>Issued on: {{ now.strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-12 text-center">
+                    <a href="/user/events/{{ event.EventID }}?email={{ email }}" class="btn btn-primary">Back to Event</a>
+                    <button onclick="window.print()" class="btn btn-success">Print Certificate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

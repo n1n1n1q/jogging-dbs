@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .actions {
+            margin: 20px 0;
+        }
+        .event-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>
+                <h1>Event Registrations</h1>
+            </div>
+            <div>
+                <a href="/organizer/dashboard?email={{ email }}">Back to Dashboard</a>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+        
+        <div class="event-info">
+            <h2>{{ event.EventName }}</h2>
+            <p><strong>Date:</strong> {{ event.EventDate.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Participants:</strong> {{ registrations|length }} / {{ event.MaxParticipants }}</p>
+        </div>
+        
+        <div class="actions">
+            <a href="/organizer/events/{{ event.EventID }}/registrations/add?email={{ email }}" class="btn">Add Participant</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Registration Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ reg.JoggerName }}</td>
+                    <td>{{ reg.JoggerEmail }}</td>
+                    <td>{{ reg.TimeStamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="#" onclick="confirmDelete('{{ reg.JoggerEmail }}')" class="btn btn-danger">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not registrations %}
+                <tr>
+                    <td colspan="5">No participants registered for this event yet.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        function confirmDelete(joggerEmail) {
+            if (confirm('Are you sure you want to remove this participant from the event?')) {
+                window.location.href = `/organizer/events/{{ event.EventID }}/registrations/${encodeURIComponent(joggerEmail)}/delete?email={{ email }}`;
+            }
+        }
+    </script>
+</body>
+</html>
